@@ -1,0 +1,22 @@
+[project]
+name = "test-itk"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "AlexKsky",email = "sharkline942@gmail.com"}
+]
+
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.124.2,<0.125.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "setuptools (>=80.9.0,<81.0.0)",
+    "sqlalchemy (>=2.0.45,<3.0.0)",
+    "pydantic-settings (>=2.12.0,<3.0.0)",
+    "alembic (>=1.17.2,<2.0.0)",
+    "ruff (>=0.14.9,<0.15.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
