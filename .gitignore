@@ -5,3 +5,5 @@ __pycache__/
 
 .docker.env
 .env
+migrations/versions/*.py
+!migrations/versions/*initial_migration*
