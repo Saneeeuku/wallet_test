@@ -1,8 +1,13 @@
 from uuid import UUID
 
+from asyncpg import CheckViolationError
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+
+from exceptions import NonNegativeBalanceConstraintException
 from repositories.base import BaseRepository
 from db.wallet_model import WalletModel
-from schemas.wallet import Wallet, WalletOperationRequest, WalletBalance
+from schemas.wallet import Wallet, WalletOperationRequest
 from schemas.wallet import OperationType
 
 
@@ -17,7 +22,19 @@ class WalletRepository(BaseRepository):
     ) -> Wallet:
         if operation.operation_type == OperationType.WITHDRAW:
             operation.amount *= -1
-        wallet: Wallet = await self.get_one(id=wallet_uuid)
+
+        query = select(self.model).filter_by(id=wallet_uuid).with_for_update()
+        data_from_db = await self.session.execute(query)
+
+        wallet: Wallet = self.schema.model_validate(data_from_db.scalar_one(), from_attributes=True)
         wallet.balance += operation.amount
-        result: Wallet = await self.edit(wallet, id=wallet_uuid)
+
+        try:
+            result: Wallet = await self.edit(wallet, id=wallet_uuid)
+        except IntegrityError as e:
+            if {isinstance(e.orig.__cause__, CheckViolationError)}:
+                raise NonNegativeBalanceConstraintException from e
+
+        await self.session.commit()
+
         return result

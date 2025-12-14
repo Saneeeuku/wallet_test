@@ -1,4 +1,5 @@
 from enum import Enum
+from uuid import UUID
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -33,4 +34,4 @@ class WalletBalance(BaseModel):
 
 
 class Wallet(WalletBalance):
-    id: int
+    id: UUID

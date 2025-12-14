@@ -1,11 +1,13 @@
 from typing import Annotated
 from uuid import UUID
+from random import choice
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.db_base import session
 from repositories.wallet import WalletRepository
+from schemas.wallet import Wallet
 
 
 class DBManager:
@@ -32,8 +34,8 @@ async def get_db():
         yield db
 
 
-async def get_wallet_uuid(input_uuid: UUID, db: DBManager = Depends(get_db)) -> UUID:
-    uuid_from_db = await db.wallets.get_one(id=input_uuid)
-    return uuid_from_db
+async def get_wallet_uuid(db: DBManager = Depends(get_db)) -> UUID:
+    uuids_from_db: list[Wallet] = await db.wallets.get_all()
+    return choice(uuids_from_db).id
 
 DBDep = Annotated[DBManager, Depends(get_db)]

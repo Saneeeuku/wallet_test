@@ -1,19 +1,41 @@
 from uuid import UUID
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from starlette.status import HTTP_409_CONFLICT
 
-from schemas.wallet import WalletOperationRequest, WalletBalance
+from fastapi import APIRouter, Depends, HTTPException
+
+from exceptions import NonNegativeBalanceConstraintException
+from schemas.wallet import WalletOperationRequest, WalletBalance, Wallet
 from utils import get_wallet_uuid, DBDep
 
 router = r = APIRouter(prefix="/api/v1/wallets")
 
 
-@r.post("/{wallet_uuid}/operation")
-async def change_balance(
+@r.get("/", description="Получить id рандомного кошелька для дальнейшей работы")
+async def get_wallet(
     wallet_uuid: Annotated[UUID, Depends(get_wallet_uuid)],
-    operation_request: WalletOperationRequest,
-    db: DBDep,
 ):
-    result = await db.wallets.perform_operation(wallet_uuid,operation_request)
-    return {"status": "OK", "balance": f"Новый баланс - {result.balance}"}
+    return {"wallet": wallet_uuid}
+
+
+@r.post("/{wallet_uuid}/operation", description="Изменить баланс, deposit или withdraw")
+async def change_balance(
+    db: DBDep,
+    wallet_uuid: UUID,
+    operation_request: WalletOperationRequest
+):
+    try:
+        result = await db.wallets.perform_operation(wallet_uuid,operation_request)
+    except NonNegativeBalanceConstraintException as e:
+        raise HTTPException(status_code=HTTP_409_CONFLICT, detail=e.detail)
+    return {"balance": f"Новый баланс - {result.balance}"}
+
+
+@r.post("/{wallet_uuid}", description="Показать текущий баланс", response_model=WalletBalance)
+async def get_balance(
+    wallet_uuid: UUID,
+    db: DBDep
+):
+    result: Wallet = await db.wallets.get_one(id=wallet_uuid)
+    return result

@@ -3,7 +3,11 @@ from fastapi import FastAPI
 
 from config import settings as s
 
+from api.wallet import router
+
 app = FastAPI()
+
+app.include_router(router)
 
 
 @app.get("/")

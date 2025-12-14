@@ -53,7 +53,7 @@ class BaseRepository:
             .returning(self.model)
         )
         res = await self.session.execute(stmt)
-        return res
+        return self.schema.model_validate(res.scalar_one(), from_attributes=True)
 
     async def delete(self, *q_filter, **filters):
         if filters:
