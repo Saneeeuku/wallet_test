@@ -3,7 +3,6 @@
 __pycache__/
 .ruff_cache/
 
-.docker.env
 .env
 migrations/versions/*.py
 !migrations/versions/*initial_migration*

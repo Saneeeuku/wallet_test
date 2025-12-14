@@ -63,6 +63,13 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    if config.cmd_opts.x:
+        for arg in config.cmd_opts.x:
+            if "db_url" in arg:
+                _, url = arg.split("=")
+                config.set_main_option("sqlalchemy.url", f"{url}?async_fallback=True")
+                break
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
