@@ -38,4 +38,5 @@ async def get_wallet_uuid(db: DBManager = Depends(get_db)) -> UUID:
     uuids_from_db: list[Wallet] = await db.wallets.get_all()
     return choice(uuids_from_db).id
 
+
 DBDep = Annotated[DBManager, Depends(get_db)]

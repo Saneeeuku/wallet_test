@@ -1,4 +1,4 @@
-from pytest import mark, fixture
+from pytest import mark
 
 
 async def test_get_wallet_uuid(ac):
@@ -40,8 +40,5 @@ async def test_operations(ac, wallet_uuid, status_code, get_wallet_uuid):
         wallet_uuid = get_wallet_uuid
 
     for p in payloads:
-        response = await ac.post(
-            f"/api/v1/wallets/{wallet_uuid}/operation",
-            json=p
-        )
+        response = await ac.post(f"/api/v1/wallets/{wallet_uuid}/operation", json=p)
         assert response.status_code == status_code

@@ -7,7 +7,7 @@ from alembic import context
 
 from config import settings as s
 from db.db_base import Base
-from db.wallet_model import WalletModel  # noqa: F403
+from db.wallet_model import WalletModel  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -77,9 +77,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

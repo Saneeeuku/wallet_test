@@ -21,13 +21,9 @@ async def get_wallet(
 
 
 @r.post("/{wallet_uuid}/operation", description="Изменить баланс, deposit или withdraw")
-async def change_balance(
-    db: DBDep,
-    wallet_uuid: UUID,
-    operation_request: WalletOperationRequest
-):
+async def change_balance(db: DBDep, wallet_uuid: UUID, operation_request: WalletOperationRequest):
     try:
-        result = await db.wallets.perform_operation(wallet_uuid,operation_request)
+        result = await db.wallets.perform_operation(wallet_uuid, operation_request)
     except NonNegativeBalanceConstraintException as e:
         raise HTTPException(status_code=HTTP_409_CONFLICT, detail=e.detail)
     except NoResultFound as e:
@@ -36,10 +32,7 @@ async def change_balance(
 
 
 @r.post("/{wallet_uuid}", description="Показать текущий баланс", response_model=WalletBalance)
-async def get_balance(
-    wallet_uuid: UUID,
-    db: DBDep
-):
+async def get_balance(wallet_uuid: UUID, db: DBDep):
     try:
         result: Wallet = await db.wallets.get_one(id=wallet_uuid)
     except NoResultFound as e:

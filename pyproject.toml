@@ -32,9 +32,17 @@ build-backend = "poetry.core.masonry.api"
 pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-#asyncio_default_test_loop_scope = "function"
-#asyncio_default_fixture_loop_scope = "module"
 env = [
     "DB_HOST=localhost",
     "DB_NAME=test",
 ]
+
+[tool.ruff]
+exclude = [
+    ".pytest_cache",
+    ".ruff_cache",
+    ".idea",
+    ".venv",
+]
+
+line-length = 100

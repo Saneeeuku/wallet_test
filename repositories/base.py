@@ -18,7 +18,10 @@ class BaseRepository:
     async def get_filtered(self, *q_filter, **filters):
         query = select(self.model).filter(*q_filter).filter_by(**filters)
         result = await self.session.execute(query)
-        return [self.schema.model_validate(model, from_attributes=True) for model in result.scalars().all()]
+        return [
+            self.schema.model_validate(model, from_attributes=True)
+            for model in result.scalars().all()
+        ]
 
     async def get_all(self):
         return await self.get_filtered()

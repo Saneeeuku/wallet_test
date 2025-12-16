@@ -16,9 +16,7 @@ class WalletRepository(BaseRepository):
     schema = Wallet
 
     async def perform_operation(
-        self,
-        wallet_uuid: UUID,
-        operation: WalletOperationRequest
+        self, wallet_uuid: UUID, operation: WalletOperationRequest
     ) -> Wallet:
         if operation.operation_type == OperationType.WITHDRAW:
             operation.amount *= -1
