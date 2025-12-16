@@ -1,7 +1,8 @@
 from uuid import UUID
 from typing import Annotated
 
-from starlette.status import HTTP_409_CONFLICT
+from sqlalchemy.exc import NoResultFound
+from starlette.status import HTTP_409_CONFLICT, HTTP_404_NOT_FOUND
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -29,6 +30,8 @@ async def change_balance(
         result = await db.wallets.perform_operation(wallet_uuid,operation_request)
     except NonNegativeBalanceConstraintException as e:
         raise HTTPException(status_code=HTTP_409_CONFLICT, detail=e.detail)
+    except NoResultFound as e:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=e.args)
     return {"balance": f"Новый баланс - {result.balance}"}
 
 
@@ -37,5 +40,8 @@ async def get_balance(
     wallet_uuid: UUID,
     db: DBDep
 ):
-    result: Wallet = await db.wallets.get_one(id=wallet_uuid)
+    try:
+        result: Wallet = await db.wallets.get_one(id=wallet_uuid)
+    except NoResultFound as e:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=e.args)
     return result

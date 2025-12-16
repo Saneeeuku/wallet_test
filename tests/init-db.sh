@@ -1,4 +1,3 @@
- # init-db.sh
 #!/bin/bash
 set -e
 
